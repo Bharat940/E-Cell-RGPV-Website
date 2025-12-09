@@ -293,8 +293,23 @@ export default function Hero() {
           }}
         />
       </div>
+      {/* --- MOBILE STATIC SQUARE GRID (UPDATED) --- */}
+      <div
+        className="absolute inset-0 grid sm:hidden pointer-events-none z-[10]"
+        style={{
+          gridTemplateColumns: "repeat(12, 1fr)",
+          gridAutoRows: "1fr",
+        }}
+      >
+        {Array.from({ length: 12 * 24 }).map((_, i) => (
+          <div
+            key={i}
+            className="border border-white/5 aspect-square"
+          />
+        ))}
+      </div>
 
-      {/* GRID with circular partial border glow - Hidden on mobile, dynamic on desktop */}
+      {/* --- DESKTOP INTERACTIVE GLOW GRID --- */}
       <div
         ref={gridRef}
         className="absolute inset-0 grid pointer-events-none z-[20] hidden sm:grid"

@@ -2,11 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const pathname = usePathname();
 
     // Handle scroll to change navbar background
     useEffect(() => {
@@ -31,12 +34,11 @@ export default function Navbar() {
     }, []);
 
     const navLinks = [
-        { name: "Home", href: "#" },
-        { name: "Initiatives", href: "#" },
-        { name: "Archives", href: "#" },
-        { name: "Team", href: "#" },
-        { name: "Contact", href: "#" },
+        { name: "Home", href: "/" },
+        { name: "About Us", href: "/about" },
     ];
+
+    const isActive = (href: string) => pathname === href;
 
     return (
         <>
@@ -47,7 +49,7 @@ export default function Navbar() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 lg:py-2 xl:py-3">
                     <div className="flex items-center justify-between">
                         {/* Logo - stays visible, menu drawer appears on top */}
-                        <div className="flex items-center">
+                        <Link href="/" className="flex items-center">
                             <Image
                                 src="/assets/E-Cell_logo[1] 1.png"
                                 alt="E-Cell Logo"
@@ -56,26 +58,31 @@ export default function Navbar() {
                                 className="object-contain w-20 sm:w-24 md:w-28 lg:w-32"
                                 priority
                             />
-                        </div>
+                        </Link>
 
                         {/* Desktop Navigation Links */}
                         <div className="hidden md:flex items-center gap-6 lg:gap-8">
                             {navLinks.map((link) => (
-                                <a
+                                <Link
                                     key={link.name}
                                     href={link.href}
-                                    className="text-white/90 hover:text-white transition-colors duration-200 font-medium text-sm lg:text-base"
+                                    className={`transition-all duration-200 font-medium text-sm lg:text-base border-b-2 pb-1 ${isActive(link.href)
+                                        ? "text-white border-white"
+                                        : "text-white/90 hover:text-white border-transparent hover:border-white/50"
+                                        }`}
                                 >
                                     {link.name}
-                                </a>
+                                </Link>
                             ))}
 
                             {/* Blogs Button with Border */}
                             <a
-                                href="#"
+                                href="https://blogs.ecellrgpv.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className={`px-4 lg:px-6 py-2 border-2 border-white text-white font-medium rounded transition-all duration-200 text-sm lg:text-base ${scrolled
-                                        ? "hover:bg-white hover:text-blue-600 hover:border-white"
-                                        : "hover:bg-blue-600 hover:border-blue-600"
+                                    ? "hover:bg-white hover:text-blue-600 hover:border-white"
+                                    : "hover:bg-blue-600 hover:border-blue-600"
                                     }`}
                             >
                                 Blogs
@@ -113,19 +120,24 @@ export default function Navbar() {
             >
                 <div className="flex flex-col p-6 pt-20 gap-6">
                     {navLinks.map((link) => (
-                        <a
+                        <Link
                             key={link.name}
                             href={link.href}
-                            className="text-white/90 hover:text-white transition-colors duration-200 font-medium text-lg"
+                            className={`transition-colors duration-200 font-medium text-lg ${isActive(link.href)
+                                ? "text-white border-l-4 border-white pl-3"
+                                : "text-white/90 hover:text-white"
+                                }`}
                             onClick={() => setMobileMenuOpen(false)}
                         >
                             {link.name}
-                        </a>
+                        </Link>
                     ))}
 
                     {/* Mobile Blogs Button - Same styling as desktop */}
                     <a
-                        href="#"
+                        href="https://blogs.ecellrgpv.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="px-6 py-3 border-2 border-white text-white font-medium rounded hover:bg-white hover:text-black hover:border-white transition-all duration-200 text-center mt-4"
                         onClick={() => setMobileMenuOpen(false)}
                     >

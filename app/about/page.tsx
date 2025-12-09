@@ -1,8 +1,6 @@
-import Image from "next/image"
-import Onmission from "./components/Onmission"
-import WhoWeAre from "./components/WhoWeAre"
-import { Profiler } from "react"
-import Provide from "./components/Provide"
+import Onmission from "./components/Onmission";
+import WhoWeAre from "./components/WhoWeAre";
+import Provide from "./components/Provide";
 
 
 export default function AboutPage() {
@@ -10,9 +8,7 @@ export default function AboutPage() {
         <div className="">
             <Onmission />
             <WhoWeAre />
-            
             <Provide />
-
         </div>
     )
 }
