@@ -131,6 +131,18 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
                     }}
                 />
 
+                {/* Grainy texture overlay */}
+                <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                        borderTopRightRadius: "32px",
+                        borderBottomLeftRadius: "32px",
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.35'/%3E%3C/svg%3E")`,
+                        opacity: 0.4,
+                        mixBlendMode: "overlay",
+                    }}
+                />
+
                 {/* DEFAULT TITLE */}
                 <motion.div
                     className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 text-center -translate-y-4 sm:-translate-y-6"

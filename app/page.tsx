@@ -1,9 +1,8 @@
 import Hero from "./components/Hero";
-import Navbar from "./components/Navbar";
 import OurVision from "./components/OurVision";
 import I3 from "./components/I3";
 import Initiatives from "./components/Initiatives";
-import Footer from "./components/Footer";
+import Adventures from "./components/Adventures";
 
 export default function Home() {
   return (
@@ -13,6 +12,7 @@ export default function Home() {
         <OurVision />
         <I3 />
         <Initiatives />
+        <Adventures />
       </main>
     </>
   );

@@ -89,6 +89,17 @@ function I3Card({ number, title, content }: I3CardProps) {
             : "rgba(255,255,255,0.05)",
         }}
       >
+        {/* Grainy texture overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            borderTopRightRadius: "1.5rem",
+            borderBottomLeftRadius: "1.5rem",
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.35'/%3E%3C/svg%3E")`,
+            opacity: 0.4,
+            mixBlendMode: "overlay",
+          }}
+        />
         <div className="relative w-full h-full flex items-center justify-center">
           {/* GHOST TRAIL */}
           <motion.div
@@ -111,7 +122,7 @@ function I3Card({ number, title, content }: I3CardProps) {
               },
               opacity: {
                 duration: 0.75,
-                delay: isHovered ? 0 : 0.15, 
+                delay: isHovered ? 0 : 0.15,
                 ease: [0.16, 1, 0.3, 1],
               },
             }}
@@ -128,8 +139,8 @@ function I3Card({ number, title, content }: I3CardProps) {
                       screenSize === "mobile"
                         ? "blur(1.2px)"
                         : screenSize === "tablet"
-                        ? "blur(2px)"
-                        : "blur(3px)",
+                          ? "blur(2px)"
+                          : "blur(3px)",
                   }}
                 >
                   {number}
@@ -144,8 +155,8 @@ function I3Card({ number, title, content }: I3CardProps) {
                         screenSize === "mobile"
                           ? "blur(1px)"
                           : screenSize === "tablet"
-                          ? "blur(1.6px)"
-                          : "blur(2px)",
+                            ? "blur(1.6px)"
+                            : "blur(2px)",
                     }}
                   >
                     {title}
@@ -162,8 +173,8 @@ function I3Card({ number, title, content }: I3CardProps) {
                         screenSize === "mobile"
                           ? "blur(0.8px)"
                           : screenSize === "tablet"
-                          ? "blur(1.2px)"
-                          : "blur(1.5px)",
+                            ? "blur(1.2px)"
+                            : "blur(1.5px)",
                     }}
                   />
                 </div>
@@ -177,8 +188,8 @@ function I3Card({ number, title, content }: I3CardProps) {
                       screenSize === "mobile"
                         ? "blur(1px)"
                         : screenSize === "tablet"
-                        ? "blur(1.6px)"
-                        : "blur(2px)",
+                          ? "blur(1.6px)"
+                          : "blur(2px)",
                   }}
                 >
                   {content}
