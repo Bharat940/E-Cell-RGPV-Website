@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "motion/react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 
 const i3Cards = [
   {
@@ -36,8 +36,25 @@ function I3Card({ number, title, content }: I3CardProps) {
   const [screenSize, setScreenSize] = useState<"mobile" | "tablet" | "desktop">(
     "desktop"
   );
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {
+    const checkTouchDevice = () => {
+      setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    };
+
+    const checkReducedMotion = () => {
+      setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    };
+
+    checkTouchDevice();
+    checkReducedMotion();
+  }, []);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
     const checkWidth = () => {
       const width = window.innerWidth;
 
@@ -46,10 +63,18 @@ function I3Card({ number, title, content }: I3CardProps) {
       else setScreenSize("desktop");
     };
 
-    checkWidth();
-    window.addEventListener("resize", checkWidth);
+    const debouncedResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(checkWidth, 150);
+    };
 
-    return () => window.removeEventListener("resize", checkWidth);
+    checkWidth();
+    window.addEventListener("resize", debouncedResize);
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("resize", debouncedResize);
+    };
   }, []);
 
   const TARGET_X =
@@ -65,7 +90,8 @@ function I3Card({ number, title, content }: I3CardProps) {
     if (titleRef.current) setTitleWidth(titleRef.current.offsetWidth);
   }, []);
 
-  // const ghostOpacity = isHovered ? 0.35 : 0;
+  const enableAnimations = !isTouchDevice && !prefersReducedMotion;
+
 
   return (
     <motion.div
@@ -73,8 +99,8 @@ function I3Card({ number, title, content }: I3CardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6 }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => enableAnimations && setIsHovered(true)}
+      onMouseLeave={() => enableAnimations && setIsHovered(false)}
       className="relative group"
     >
       <div
@@ -84,9 +110,10 @@ function I3Card({ number, title, content }: I3CardProps) {
           borderBottomLeftRadius: "1.5rem",
           minHeight: "360px",
           border: "2px solid transparent",
-          background: isHovered
+          background: (isHovered && enableAnimations)
             ? "linear-gradient(#040115, #040115) padding-box, linear-gradient(135deg, #FF1493, #87CEEB) border-box"
             : "rgba(255,255,255,0.05)",
+          willChange: enableAnimations ? "background" : "auto",
         }}
       >
         {/* Grainy texture overlay */}
@@ -101,114 +128,118 @@ function I3Card({ number, title, content }: I3CardProps) {
           }}
         />
         <div className="relative w-full h-full flex items-center justify-center">
-          {/* GHOST TRAIL */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none flex items-center justify-center"
-            animate={{
-              x: isHovered ? TARGET_X : 0,
-              y: isHovered ? TARGET_Y : 0,
-              opacity: isHovered ? 0.35 : 0,
-            }}
-            transition={{
-              x: {
-                duration: 0.75,
-                delay: 0.1,
-                ease: [0.4, 0, 0.2, 1],
-              },
-              y: {
-                duration: 0.75,
-                delay: 0.1,
-                ease: [0.4, 0, 0.2, 1],
-              },
-              opacity: {
-                duration: 0.75,
-                delay: isHovered ? 0 : 0.15,
-                ease: [0.16, 1, 0.3, 1],
-              },
-            }}
-          >
-            <div
-              className={`flex justify-start lg:justify-center transition-all duration-600`}
+          {/* GHOST TRAIL - Only render on desktop with animations enabled */}
+          {enableAnimations && (
+            <motion.div
+              className="absolute inset-0 pointer-events-none flex items-center justify-center"
+              animate={{
+                x: isHovered ? TARGET_X : 0,
+                y: isHovered ? TARGET_Y : 0,
+                opacity: isHovered ? 0.35 : 0,
+              }}
+              transition={{
+                x: {
+                  duration: 0.6,
+                  delay: 0.08,
+                  ease: [0.4, 0, 0.2, 1],
+                },
+                y: {
+                  duration: 0.6,
+                  delay: 0.08,
+                  ease: [0.4, 0, 0.2, 1],
+                },
+                opacity: {
+                  duration: 0.6,
+                  delay: isHovered ? 0 : 0.12,
+                  ease: [0.16, 1, 0.3, 1],
+                },
+              }}
+              style={{ willChange: "transform, opacity" }}
             >
-              <div className="flex flex-col items-start">
-                <h3
-                  className="text-5xl sm:text-6xl md:text-7xl lg:text-[8.5rem] font-bold font-[var(--font-clash-display)] mb-5"
-                  style={{
-                    color: "#1D86C2",
-                    filter:
-                      screenSize === "mobile"
-                        ? "blur(1.2px)"
-                        : screenSize === "tablet"
-                          ? "blur(2px)"
-                          : "blur(3px)",
-                  }}
-                >
-                  {number}
-                </h3>
-
-                <div className="inline-block">
-                  <h4
-                    className="text-xl md:text-2xl font-bold text-white font-[var(--font-clash-display)] mb-2"
+              <div
+                className={`flex justify-start lg:justify-center transition-all duration-600`}
+              >
+                <div className="flex flex-col items-start">
+                  <h3
+                    className="text-5xl sm:text-6xl md:text-7xl lg:text-[8.5rem] font-bold font-[var(--font-clash-display)] mb-5"
                     style={{
-                      opacity: 0.25,
-                      filter:
-                        screenSize === "mobile"
-                          ? "blur(1px)"
-                          : screenSize === "tablet"
-                            ? "blur(1.6px)"
-                            : "blur(2px)",
-                    }}
-                  >
-                    {title}
-                  </h4>
-
-                  {/* Ghost underline */}
-                  <div
-                    className="h-1 rounded-full"
-                    style={{
-                      width: `${titleWidth * 0.8}px`,
-                      background: "linear-gradient(135deg,#FF1493,#87CEEB)",
-                      opacity: 0.22,
+                      color: "#1D86C2",
                       filter:
                         screenSize === "mobile"
                           ? "blur(0.8px)"
                           : screenSize === "tablet"
                             ? "blur(1.2px)"
+                            : "blur(2.5px)",
+                    }}
+                  >
+                    {number}
+                  </h3>
+
+                  <div className="inline-block">
+                    <h4
+                      className="text-xl md:text-2xl font-bold text-white font-[var(--font-clash-display)] mb-2"
+                      style={{
+                        opacity: 0.25,
+                        filter:
+                          screenSize === "mobile"
+                            ? "blur(0.6px)"
+                            : screenSize === "tablet"
+                              ? "blur(1px)"
+                              : "blur(1.5px)",
+                      }}
+                    >
+                      {title}
+                    </h4>
+
+                    {/* Ghost underline */}
+                    <div
+                      className="h-1 rounded-full"
+                      style={{
+                        width: `${titleWidth * 0.8}px`,
+                        background: "linear-gradient(135deg,#FF1493,#87CEEB)",
+                        opacity: 0.22,
+                        filter:
+                          screenSize === "mobile"
+                            ? "blur(0.5px)"
+                            : screenSize === "tablet"
+                              ? "blur(0.8px)"
+                              : "blur(1.2px)",
+                      }}
+                    />
+                  </div>
+
+                  {/* Ghost Content */}
+                  <p
+                    className="mt-10 text-sm max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg leading-relaxed font-[var(--font-geist-sans)] text-left"
+                    style={{
+                      opacity: 0.2,
+                      filter:
+                        screenSize === "mobile"
+                          ? "blur(0.6px)"
+                          : screenSize === "tablet"
+                            ? "blur(1px)"
                             : "blur(1.5px)",
                     }}
-                  />
+                  >
+                    {content}
+                  </p>
                 </div>
-
-                {/* Ghost Content */}
-                <p
-                  className="mt-10 text-sm max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg leading-relaxed font-[var(--font-geist-sans)] text-left"
-                  style={{
-                    opacity: 0.2,
-                    filter:
-                      screenSize === "mobile"
-                        ? "blur(1px)"
-                        : screenSize === "tablet"
-                          ? "blur(1.6px)"
-                          : "blur(2px)",
-                  }}
-                >
-                  {content}
-                </p>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          )}
 
           {/* MAIN CONTENT - dynamic alignment */}
           <motion.div
             className="relative z-20 w-full"
             animate={{
-              x: isHovered ? TARGET_X : 0,
-              y: isHovered ? TARGET_Y : 0,
+              x: (isHovered && enableAnimations) ? TARGET_X : 0,
+              y: (isHovered && enableAnimations) ? TARGET_Y : 0,
             }}
             transition={{
-              duration: 0.6,
+              duration: 0.5,
               ease: [0.4, 0, 0.2, 1],
             }}
+            style={{ willChange: enableAnimations ? "transform" : "auto" }}
           >
             <div
               className={`flex justify-start lg:justify-center transition-all duration-600`}
@@ -216,8 +247,9 @@ function I3Card({ number, title, content }: I3CardProps) {
               <div className="flex flex-col items-start">
                 {/* Number */}
                 <motion.h3
-                  className="text-5xl sm:text-6xl md:text-7xl lg:text-[8.5rem] font-bold mb-5 font-[var(--font-clash-display)]"
-                  animate={{ color: isHovered ? "#4BA3D1" : "#1D86C2" }}
+                  className="text-6xl sm:text-7xl md:text-7xl lg:text-[8.5rem] font-bold mb-5 font-[var(--font-clash-display)]"
+                  animate={{ color: (isHovered && enableAnimations) ? "#4BA3D1" : "#1D86C2" }}
+                  transition={{ duration: 0.3 }}
                 >
                   {number}
                 </motion.h3>
@@ -226,7 +258,7 @@ function I3Card({ number, title, content }: I3CardProps) {
                   {/* Title */}
                   <h4
                     ref={titleRef}
-                    className="text-xl md:text-2xl font-bold text-white mb-2 font-[var(--font-clash-display)]"
+                    className="text-2xl sm:text-2xl md:text-2xl font-bold text-white mb-2 font-[var(--font-clash-display)]"
                   >
                     {title}
                   </h4>
@@ -245,10 +277,11 @@ function I3Card({ number, title, content }: I3CardProps) {
                 <motion.p
                   className="mt-10 text-sm max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg leading-relaxed font-[var(--font-geist-sans)] text-left"
                   animate={{
-                    opacity: isHovered ? 1 : 0,
-                    y: isHovered ? 0 : 10,
+                    opacity: (isHovered && enableAnimations) || isTouchDevice ? 1 : 0,
+                    y: (isHovered && enableAnimations) || isTouchDevice ? 0 : 10,
                   }}
-                  transition={{ duration: 0.4, delay: 0.12 }}
+                  transition={{ duration: 0.3, delay: 0.08 }}
+                  style={{ willChange: enableAnimations ? "opacity, transform" : "auto" }}
                 >
                   {content}
                 </motion.p>

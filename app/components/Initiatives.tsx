@@ -36,18 +36,48 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
     const [isHovered, setIsHovered] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [isTablet, setIsTablet] = useState(false);
+    const [isTouchDevice, setIsTouchDevice] = useState(false);
+    const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
-    // Detect screen size on client only to avoid hydration mismatch
+    // Detect touch device and reduced motion preference
     useEffect(() => {
+        const checkTouchDevice = () => {
+            setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+        };
+
+        const checkReducedMotion = () => {
+            setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        };
+
+        checkTouchDevice();
+        checkReducedMotion();
+    }, []);
+
+    // Debounced resize handler for better performance
+    useEffect(() => {
+        let timeoutId: NodeJS.Timeout;
+
         const updateScreenSize = () => {
             setIsMobile(window.innerWidth < 768);
             setIsTablet(window.innerWidth >= 768 && window.innerWidth < 1024);
         };
 
+        const debouncedResize = () => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(updateScreenSize, 150);
+        };
+
         updateScreenSize();
-        window.addEventListener('resize', updateScreenSize);
-        return () => window.removeEventListener('resize', updateScreenSize);
+        window.addEventListener('resize', debouncedResize);
+
+        return () => {
+            clearTimeout(timeoutId);
+            window.removeEventListener('resize', debouncedResize);
+        };
     }, []);
+
+    // Disable hover animations on touch devices or if user prefers reduced motion
+    const enableAnimations = !isTouchDevice && !prefersReducedMotion;
 
     const positions = {
         center: { scale: 1, x: 0, opacity: 1, filter: "blur(0px)", zIndex: 40 },
@@ -55,25 +85,31 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
             scale: isMobile ? 0.7 : isTablet ? 0.7 : 0.72,
             x: isMobile ? -180 : isTablet ? -250 : -330,
             opacity: isMobile ? 0.4 : isTablet ? 0.18 : 0.22,
-            filter: isMobile ? "blur(3px)" : isTablet ? "blur(4px)" : "blur(5px)",
+            // Remove blur on mobile for better INP performance
+            filter: isMobile ? "blur(0px)" : isTablet ? "blur(1.5px)" : "blur(2px)",
             zIndex: 5
         },
         right: {
             scale: isMobile ? 0.7 : isTablet ? 0.7 : 0.72,
             x: isMobile ? 180 : isTablet ? 250 : 330,
             opacity: isMobile ? 0.4 : isTablet ? 0.18 : 0.22,
-            filter: isMobile ? "blur(3px)" : isTablet ? "blur(4px)" : "blur(5px)",
+            // Remove blur on mobile for better INP performance
+            filter: isMobile ? "blur(0px)" : isTablet ? "blur(1.5px)" : "blur(2px)",
             zIndex: 5
         },
     };
 
     return (
         <motion.div
-            className="absolute w-full max-w-[90%] sm:max-w-md md:max-w-lg cursor-pointer"
+            className="absolute w-full max-w-full sm:max-w-md md:max-w-lg cursor-pointer"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ ...positions[position], opacity: positions[position].opacity }}
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-            onMouseEnter={() => isActive && setIsHovered(true)}
+            // Faster transition on mobile for better INP
+            transition={{
+                duration: isMobile ? 0.35 : 0.5,
+                ease: isMobile ? "easeOut" : [0.22, 1, 0.36, 1]
+            }}
+            onMouseEnter={() => isActive && enableAnimations && setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             onClick={onClick}
             drag={isMobile ? "x" : false}
@@ -83,6 +119,9 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
                 if (isMobile && Math.abs(offset.x) > 50) {
                     onClick();
                 }
+            }}
+            style={{
+                willChange: isMobile ? "transform, opacity" : "transform, opacity, filter"
             }}
         >
             <div
@@ -147,11 +186,15 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
                 <motion.div
                     className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 text-center -translate-y-4 sm:-translate-y-6"
                     animate={{
-                        opacity: isHovered && isActive ? 0 : 1,
-                        scale: isHovered && isActive ? 0.95 : 1,
-                        filter: isHovered && isActive ? "blur(4px)" : "blur(0px)",
+                        opacity: ((isHovered && isActive && enableAnimations) || isTouchDevice) ? 0 : 1,
+                        scale: ((isHovered && isActive && enableAnimations) || isTouchDevice) ? 0.95 : 1,
+                        // Remove blur on mobile for better INP
+                        filter: ((isHovered && isActive && enableAnimations) || isTouchDevice)
+                            ? (isMobile ? "blur(0px)" : "blur(2px)")
+                            : "blur(0px)",
                     }}
-                    transition={{ duration: 0.55, ease: "easeInOut" }}
+                    transition={{ duration: isMobile ? 0.3 : 0.4, ease: "easeInOut" }}
+                    style={{ willChange: enableAnimations ? "opacity, transform" : "auto" }}
                 >
                     <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
                         {title}
@@ -162,11 +205,15 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
                 <motion.div
                     className="absolute inset-0 flex flex-col items-center justify-center px-6 sm:px-8 md:px-10 text-center -translate-y-4 sm:-translate-y-6"
                     animate={{
-                        opacity: isHovered && isActive ? 1 : 0,
-                        scale: isHovered && isActive ? 1 : 0.97,
-                        filter: isHovered && isActive ? "blur(0px)" : "blur(4px)",
+                        opacity: ((isHovered && isActive && enableAnimations) || isTouchDevice) ? 1 : 0,
+                        scale: ((isHovered && isActive && enableAnimations) || isTouchDevice) ? 1 : 0.97,
+                        // Remove blur on mobile for better INP
+                        filter: ((isHovered && isActive && enableAnimations) || isTouchDevice)
+                            ? "blur(0px)"
+                            : (isMobile ? "blur(0px)" : "blur(2px)"),
                     }}
-                    transition={{ duration: 0.55, ease: "easeInOut" }}
+                    transition={{ duration: isMobile ? 0.3 : 0.4, ease: "easeInOut" }}
+                    style={{ willChange: enableAnimations ? "opacity, transform" : "auto" }}
                 >
                     <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-6">
                         {title}
@@ -225,7 +272,7 @@ export default function Initiatives() {
 
     return (
         <section
-            className="relative min-h-screen py-24 px-6"
+            className="relative min-h-screen py-24 px-2 sm:px-6"
             style={{ backgroundColor: "#040115" }}
         >
             {/* Background Image */}
@@ -246,7 +293,7 @@ export default function Initiatives() {
                         Initiatives
                     </h2>
 
-                    <p className="text-white/70 text-sm sm:text-base md:text-lg max-w-3xl mx-auto leading-relaxed px-4">
+                    <p className="text-white/70 text-sm sm:text-base md:text-lg max-w-3xl mx-auto leading-relaxed px-2 sm:px-4">
                         To fulfill our vision to build an ecosystem where networking and entrepreneurial
                         mindset are encouraged, these initiatives guide future entrepreneurs.
                     </p>

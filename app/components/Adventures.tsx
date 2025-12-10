@@ -4,6 +4,30 @@ import Image from "next/image";
 import { motion } from "motion/react";
 
 export default function Adventures() {
+    // Generate intersection circles for each concentric circle
+    // Radius is now a percentage of the radar size
+    const generateIntersectionCircles = (radiusPercent: number, circleClass: string) => {
+        // Only show circles on major horizontal and vertical lines (4 cardinal directions)
+        const angles = [0, 90, 180, 270];
+        return angles.map((angle, index) => {
+            const radian = (angle * Math.PI) / 180;
+            // Calculate position as percentage
+            const xPercent = radiusPercent * Math.cos(radian);
+            const yPercent = radiusPercent * Math.sin(radian);
+
+            return (
+                <div
+                    key={`${circleClass}-${index}`}
+                    className="intersection-dot"
+                    style={{
+                        left: `calc(50% + ${xPercent}%)`,
+                        top: `calc(50% + ${yPercent}%)`,
+                    }}
+                />
+            );
+        });
+    };
+
     return (
         <section
             className="relative w-full overflow-hidden"
@@ -37,6 +61,43 @@ export default function Adventures() {
                     </motion.div>
                 </div>
             </div>
+
+            {/* Radar Section */}
+            <div className="relative w-full min-h-screen flex items-center justify-center py-20">
+                <div className="radar-container">
+                    <div className="radar">
+                        {/* Radial Lines */}
+                        <div className="radar-lines"></div>
+
+                        {/* 4 Concentric Circles with Purple Gradient */}
+                        <div className="radar-circle radar-circle-1"></div>
+                        <div className="radar-circle radar-circle-2"></div>
+                        <div className="radar-circle radar-circle-3"></div>
+                        <div className="radar-circle radar-circle-4"></div>
+
+                        {/* Intersection Circles - Using percentages */}
+                        {generateIntersectionCircles(12.5, 'circle-1')} {/* 25% / 2 = 12.5% */}
+                        {generateIntersectionCircles(25, 'circle-2')}   {/* 50% / 2 = 25% */}
+                        {generateIntersectionCircles(37.5, 'circle-3')} {/* 75% / 2 = 37.5% */}
+                        {generateIntersectionCircles(49, 'circle-4')}   {/* 98% / 2 = 49% */}
+
+                        {/* Sweep Effect */}
+                        <div className="sweep"></div>
+
+                        {/* Logo at Center */}
+                        <div className="radar-logo">
+                            <Image
+                                src="/assets/E-Cell_logo[1] 1.png"
+                                alt="E-Cell Logo"
+                                width={80}
+                                height={80}
+                                className="object-contain"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
     );
 }
+

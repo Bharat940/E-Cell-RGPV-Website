@@ -43,7 +43,7 @@ const GridCell = memo(({
   }
 
   // Calculate intensity based on distance
-  const intensity = Math.max(0, 1 - distanceToCenter / glowRadius);
+  // const intensity = Math.max(0, 1 - distanceToCenter / glowRadius);
 
   // Calculate which parts of borders should glow
   const getBorderGlow = (borderType: 'top' | 'right' | 'bottom' | 'left') => {
@@ -161,14 +161,20 @@ const GridCell = memo(({
 GridCell.displayName = 'GridCell';
 
 export default function Hero() {
-  // Dynamic grid dimensions that maintain perfectly square cells
-  const [gridDimensions, setGridDimensions] = useState({ rows: 24, cols: 42 });
+  const [gridDimensions, setGridDimensions] = useState({ rows: 36, cols: 64 });
   const { rows, cols } = gridDimensions;
   const totalCells = rows * cols;
 
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
+  const [gridReady, setGridReady] = useState(false);
+
+  // Store desktop grid cell dimensions in state
+  const [desktopCellDimensions, setDesktopCellDimensions] = useState({
+    cellWidth: 0,
+    cellHeight: 0
+  });
 
   // Calculate grid dimensions to maintain square cells
   useEffect(() => {
@@ -191,16 +197,21 @@ export default function Hero() {
       const newCols = Math.floor(width / cellSize);
       const newRows = Math.floor(height / cellSize);
 
-      // Only update if dimensions changed significantly (avoid unnecessary re-renders)
       setGridDimensions(prev => {
-        if (Math.abs(prev.cols - newCols) > 1 || Math.abs(prev.rows - newRows) > 1) {
+        if (prev.cols !== newCols || prev.rows !== newRows) {
           return { rows: newRows, cols: newCols };
         }
         return prev;
       });
+
+      // Store cell dimensions
+      const cellWidth = rect.width / newCols;
+      const cellHeight = rect.height / newRows;
+      setDesktopCellDimensions({ cellWidth, cellHeight });
+
+      setGridReady(true);
     };
 
-    // Initial calculation
     calculateGrid();
 
     // Recalculate on window resize
@@ -208,7 +219,6 @@ export default function Hero() {
     return () => window.removeEventListener('resize', calculateGrid);
   }, []);
 
-  // OPTIMIZED: Throttle mouse updates using requestAnimationFrame
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (rafRef.current !== null) {
@@ -245,13 +255,8 @@ export default function Hero() {
     };
   }, []);
 
-  // Calculate cell dimensions
   const getCellDimensions = (i: number) => {
-    if (!gridRef.current) return { cellX: 0, cellY: 0, cellWidth: 0, cellHeight: 0 };
-
-    const rect = gridRef.current.getBoundingClientRect();
-    const cellWidth = rect.width / cols;
-    const cellHeight = rect.height / rows;
+    const { cellWidth, cellHeight } = desktopCellDimensions;
 
     const row = Math.floor(i / cols);
     const col = i % cols;
@@ -293,29 +298,29 @@ export default function Hero() {
           }}
         />
       </div>
-      {/* --- MOBILE STATIC SQUARE GRID (UPDATED) --- */}
+      
+      {/* --- MOBILE STATIC GRID (no glow effect for performance) --- */}
       <div
-        className="absolute inset-0 grid sm:hidden pointer-events-none z-[10]"
+        className="absolute inset-0 grid sm:hidden pointer-events-none z-[10] transition-opacity duration-800"
         style={{
           gridTemplateColumns: "repeat(12, 1fr)",
-          gridAutoRows: "1fr",
+          gridTemplateRows: "repeat(24, 1fr)",
+          opacity: gridReady ? 1 : 0,
         }}
       >
         {Array.from({ length: 12 * 24 }).map((_, i) => (
-          <div
-            key={i}
-            className="border border-white/5 aspect-square"
-          />
+          <div key={i} className="relative w-full h-full border border-white/10" />
         ))}
       </div>
 
       {/* --- DESKTOP INTERACTIVE GLOW GRID --- */}
       <div
         ref={gridRef}
-        className="absolute inset-0 grid pointer-events-none z-[20] hidden sm:grid"
+        className="absolute inset-0 grid pointer-events-none z-[20] hidden sm:grid transition-opacity duration-800"
         style={{
           gridTemplateColumns: `repeat(${cols}, 1fr)`,
           gridTemplateRows: `repeat(${rows}, 1fr)`,
+          opacity: gridReady ? 1 : 0,
         }}
       >
         {Array.from({ length: totalCells }).map((_, i) => {
@@ -370,11 +375,11 @@ export default function Hero() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.8 }}
             className="
-      px-6 sm:px-8 py-2.5 sm:py-3 font-semibold relative overflow-hidden
-      bg-blue-600 text-white text-sm sm:text-base
-      transition-colors duration-150
-      font-[var(--font-clash-display)]
-    "
+              px-6 sm:px-8 py-2.5 sm:py-3 font-semibold relative overflow-hidden
+              bg-blue-600 text-white text-sm sm:text-base
+              transition-colors duration-150
+              font-[var(--font-clash-display)]
+            "
           >
             {/* BUTTON TEXT */}
             <span className="relative z-30 transition-colors duration-300 group-hover:text-blue-600">
@@ -384,24 +389,24 @@ export default function Hero() {
             {/* ORANGE FLASH (instant, disappears fast) */}
             <span
               className="
-        absolute inset-0 bg-orange-500
-        opacity-0 group-hover:opacity-80 
-        transition-opacity duration-75
-        group-hover:delay-[0ms]
-        z-10
-      "
+                absolute inset-0 bg-orange-500
+                opacity-0 group-hover:opacity-80 
+                transition-opacity duration-75
+                group-hover:delay-[0ms]
+                z-10
+              "
               style={{ transitionDelay: "0ms" }}
             ></span>
 
             {/* WHITE WIPE (covers orange immediately) */}
             <span
               className="
-        absolute inset-0 bg-white
-        translate-x-[-100%]
-        group-hover:translate-x-0
-        transition-transform duration-500 ease-out
-        z-20
-      "
+                absolute inset-0 bg-white
+                translate-x-[-100%]
+                group-hover:translate-x-0
+                transition-transform duration-500 ease-out
+                z-20
+              "
             ></span>
           </motion.button>
         </div>

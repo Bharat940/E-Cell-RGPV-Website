@@ -26,6 +26,148 @@ body {
 
 .bg-neon {
   background: radial-gradient(circle at top center, rgba(0, 102, 255, 0.25), transparent 60%),
-              radial-gradient(circle at bottom center, rgba(174, 0, 255, 0.25), transparent 60%),
-              linear-gradient(180deg, #0b0f27, #050518);
+    radial-gradient(circle at bottom center, rgba(174, 0, 255, 0.25), transparent 60%),
+    linear-gradient(180deg, #0b0f27, #050518);
+}
+
+/* Radar Effect Styles - Responsive & Optimized */
+.radar-container {
+  position: relative;
+  /* Responsive sizing: 280px on mobile, scales up to 600px on desktop */
+  width: clamp(280px, 80vw, 600px);
+  height: clamp(280px, 80vw, 600px);
+  max-width: 600px;
+  max-height: 600px;
+}
+
+.radar {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(#1a1a3e, #0a0a1a);
+  box-shadow: 0 0 0 2px hsla(0, 0%, 0%, 0.5),
+    inset 0 0 0 2px hsla(0, 0%, 100%, 0.15);
+  will-change: transform;
+}
+
+/* 12 Radial Lines from center to outermost circle - purple lines */
+.radar-lines {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    linear-gradient(0deg, transparent calc(50% - 0.5px), #6b5fc1 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(30deg, transparent calc(50% - 0.5px), #6b5fc1 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(60deg, transparent calc(50% - 0.5px), #6b5fc1 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(90deg, transparent calc(50% - 0.5px), #6b5fc1 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(120deg, transparent calc(50% - 0.5px), #6b5fc1 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(150deg, transparent calc(50% - 0.5px), #6b5fc1 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(180deg, transparent calc(50% - 0.5px), #6b5fc1 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(210deg, transparent calc(50% - 0.5px), #6b5fc1 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(240deg, transparent calc(50% - 0.5px), #6b5fc1 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(270deg, transparent calc(50% - 0.5px), #6b5fc1 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(300deg, transparent calc(50% - 0.5px), #6b5fc1 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(330deg, transparent calc(50% - 0.5px), #6b5fc1 50%, transparent calc(50% + 0.5px));
+}
+
+/* 4 Concentric Circles with Purple-tinted Gradient Effect */
+.radar-circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid #6b5fc1;
+  pointer-events: none;
+}
+
+/* Circle 1 - Innermost (strongest purple gradient at border) */
+/* 25% of radar size */
+.radar-circle-1 {
+  top: 50%;
+  left: 50%;
+  width: 25%;
+  height: 25%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, transparent 0%, rgba(107, 95, 193, 0.05) 50%, rgba(107, 95, 193, 0.15) 100%);
+}
+
+/* Circle 2 - 50% of radar size */
+.radar-circle-2 {
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  height: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, transparent 0%, rgba(107, 95, 193, 0.03) 50%, rgba(107, 95, 193, 0.1) 100%);
+}
+
+/* Circle 3 - 75% of radar size */
+.radar-circle-3 {
+  top: 50%;
+  left: 50%;
+  width: 75%;
+  height: 75%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, transparent 0%, rgba(107, 95, 193, 0.02) 50%, rgba(107, 95, 193, 0.06) 100%);
+}
+
+/* Circle 4 - Outermost (98% to stay within border) */
+.radar-circle-4 {
+  top: 50%;
+  left: 50%;
+  width: 98%;
+  height: 98%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, transparent 0%, rgba(107, 95, 193, 0.01) 50%, rgba(107, 95, 193, 0.03) 100%);
+}
+
+/* Intersection Circles - Small hollow dots where lines meet circles */
+.intersection-dot {
+  position: absolute;
+  /* Responsive sizing for dots */
+  width: clamp(6px, 1.5vw, 8px);
+  height: clamp(6px, 1.5vw, 8px);
+  background: transparent;
+  border: 1px solid #6b5fc1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 4px rgba(107, 95, 193, 0.5);
+  pointer-events: none;
+}
+
+/* Sweep Animation */
+.sweep {
+  position: absolute;
+  box-sizing: border-box;
+  top: 0.83%;
+  left: 0.83%;
+  border-right: solid 2px hsla(250, 60%, 60%, 0.4);
+  width: 49.17%;
+  height: 49.17%;
+  border-radius: 100% 0 0 0;
+  transform-origin: 100% 100%;
+  background: linear-gradient(50deg, rgba(34, 34, 34, 0) 56%, hsla(250, 70%, 60%, 0.8));
+  animation: sweep 5s infinite linear;
+  z-index: 10;
+  will-change: transform;
+}
+
+@keyframes sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Logo at Center - Transparent Background */
+.radar-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Responsive logo size */
+  width: clamp(60px, 15vw, 100px);
+  height: clamp(60px, 15vw, 100px);
 }
