@@ -84,17 +84,15 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
         left: {
             scale: isMobile ? 0.7 : isTablet ? 0.7 : 0.72,
             x: isMobile ? -180 : isTablet ? -250 : -330,
-            opacity: isMobile ? 0.4 : isTablet ? 0.18 : 0.22,
-            // Remove blur on mobile for better INP performance
-            filter: isMobile ? "blur(0px)" : isTablet ? "blur(1.5px)" : "blur(2px)",
+            opacity: isMobile ? 0.3 : isTablet ? 0.15 : 0.18,
+            filter: isMobile ? "blur(2px)" : isTablet ? "blur(3px)" : "blur(4px)",
             zIndex: 5
         },
         right: {
             scale: isMobile ? 0.7 : isTablet ? 0.7 : 0.72,
             x: isMobile ? 180 : isTablet ? 250 : 330,
-            opacity: isMobile ? 0.4 : isTablet ? 0.18 : 0.22,
-            // Remove blur on mobile for better INP performance
-            filter: isMobile ? "blur(0px)" : isTablet ? "blur(1.5px)" : "blur(2px)",
+            opacity: isMobile ? 0.3 : isTablet ? 0.15 : 0.18,
+            filter: isMobile ? "blur(2px)" : isTablet ? "blur(3px)" : "blur(4px)",
             zIndex: 5
         },
     };
@@ -129,9 +127,9 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
                 style={{
                     borderTopRightRadius: "32px",
                     borderBottomLeftRadius: "32px",
-                    background: "linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.02) 100%)",
+                    background: "linear-gradient(135deg, rgba(107, 95, 193, 0.25) 0%, rgba(107, 95, 193, 0.1) 50%, rgba(60, 50, 120, 0.15) 100%)",
                     backdropFilter: "blur(22px)",
-                    boxShadow: "0px 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.1)",
+                    boxShadow: "0px 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(107, 95, 193, 0.3)",
                     position: "relative",
                     overflow: "hidden",
                 }}
@@ -159,25 +157,16 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
                     }}
                 />
 
-                {/* Glass shine effect */}
-                <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                        borderTopRightRadius: "32px",
-                        borderBottomLeftRadius: "32px",
-                        background: "linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 50%)",
-                        opacity: 0.5,
-                    }}
-                />
+                {/* Glass shine effect - */}
 
-                {/* Grainy texture overlay */}
+                {/* Grainy texture overlay with purple tint */}
                 <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
                         borderTopRightRadius: "32px",
                         borderBottomLeftRadius: "32px",
                         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.35'/%3E%3C/svg%3E")`,
-                        opacity: 0.4,
+                        opacity: 0.6,
                         mixBlendMode: "overlay",
                     }}
                 />
