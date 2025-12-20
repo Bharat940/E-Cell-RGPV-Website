@@ -286,8 +286,19 @@ export default function Hero() {
         />
       </div>
 
+      {/* Background Glow */}
+      <div className="
+        absolute w-[400px] h-[300px]
+        md:w-[800px] md:h-[600px]
+        bg-[#407EDD] rounded-full
+        blur-[200px] opacity-30
+        top-1/2 left-1/2
+        -translate-x-1/2 -translate-y-1/2
+        pointer-events-none z-[30]
+      "></div>
+
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/40 pointer-events-none z-[1]"></div>
+      <div className="absolute inset-0 bg-black/40 pointer-events-none z-[6]"></div>
 
       {/* Subtle white underlay behind text */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[25]">
@@ -298,7 +309,7 @@ export default function Hero() {
           }}
         />
       </div>
-      
+
       {/* --- MOBILE STATIC GRID (no glow effect for performance) --- */}
       <div
         className="absolute inset-0 grid sm:hidden pointer-events-none z-[10] transition-opacity duration-800"

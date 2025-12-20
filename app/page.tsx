@@ -2,6 +2,7 @@ import Hero from "./components/Hero";
 import OurVision from "./components/OurVision";
 import I3 from "./components/I3";
 import Initiatives from "./components/Initiatives";
+import OurEvents from "./components/OurEvents";
 import Adventures from "./components/Adventures";
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
         <I3 />
         <Initiatives />
         <Adventures />
+        <OurEvents />
       </main>
     </>
   );

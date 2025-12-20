@@ -1,10 +1,16 @@
 import React from "react";
-import { Mic, FileText, FileCheck, SpellCheck, Sparkles } from "lucide-react";
+import {
+  EntrepreneurshipIcon,
+  StudentSupportIcon,
+  IncubationIcon,
+  MentoringIcon,
+  CollaborationIcon
+} from "./ProvideIcons";
 
 const Provide = () => {
   return (
-    <div className="bg-gradient-to-d from-[#16103c] to-[#0f0b28]">
-      <h1 className=" text-center text-4xl  my-4   z-100">What we Provide</h1>
+    <div className="bg-gradient-to-d from-[#16103c] to-[#0f0b28] pt-12 border-b-2 border-black">
+      <h1 className=" text-center text-4xl  my-4 z-100">What we Provide</h1>
       <section className="w-full  flex items-center justify-center p-8 relative overflow-hidden">
 
         {/* Background Gradient/Glow Effects to match the deep blue vibe */}
@@ -13,48 +19,48 @@ const Provide = () => {
         <div className="relative z-10 max-w-5xl w-full">
 
           {/* --- ROW 1: 3 Columns --- */}
-          <div className="grid grid-cols-1 md:grid-cols-3 border-b border-white/10">
+          <div className="grid grid-cols-1 md:grid-cols-3 md:border-b border-white/10">
 
             {/* Item 1 */}
             <FeatureItem
-              icon={<Mic className="w-8 h-8 text-white/90" strokeWidth={1.5} />}
+              icon={<EntrepreneurshipIcon />}
               title="Entrepreneurship"
               description="with human-level accuracy"
-              className="md:border-r border-white/10"
+              className="md:border-r border-b border-white/10 md:border-b-0"
             />
 
             {/* Item 2 */}
             <FeatureItem
-              icon={<FileText className="w-8 h-8 text-white/90" strokeWidth={1.5} />}
+              icon={<StudentSupportIcon />}
               title="Student Support"
               description="from your scattered thoughts"
-              className="md:border-r border-white/10"
+              className="md:border-r border-b border-white/10 md:border-b-0"
             />
 
             {/* Item 3 */}
             <FeatureItem
-              icon={<FileCheck className="w-8 h-8 text-white/90" strokeWidth={1.5} />}
+              icon={<IncubationIcon />}
               title="Incubation"
               description="items from your meeting notes"
-              className="" // No right border on the last item
+              className="border-b border-white/10 md:border-b-0"
             />
           </div>
 
           {/* --- ROW 2: 2 Columns (Centered) --- */}
           {/* We use a specific grid setup here to center the 2 items visually */}
-          <div className="grid grid-cols-1 md:grid-cols-2 max-w-[66%] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 md:max-w-[66%] md:mx-auto">
 
             {/* Item 4 */}
             <FeatureItem
-              icon={<SpellCheck className="w-8 h-8 text-white/90" strokeWidth={1.5} />}
+              icon={<MentoringIcon />}
               title="Mentoring"
               description="and improve your writing"
-              className="md:border-r border-white/10"
+              className="md:border-r border-b border-white/10 md:border-b-0"
             />
 
             {/* Item 5 */}
             <FeatureItem
-              icon={<Sparkles className="w-8 h-8 text-white/90" strokeWidth={1.5} />}
+              icon={<CollaborationIcon />}
               title="Collaboration"
               description="custom prompts"
               className=""

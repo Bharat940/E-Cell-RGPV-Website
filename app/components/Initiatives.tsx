@@ -20,9 +20,14 @@ const initiatives = [
         content:
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     },
+    {
+        title: "Alumni Entrepreneurship",
+        content:
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    },
 ];
 
-type Position = "center" | "left" | "right";
+type Position = "center" | "left" | "right" | "hidden";
 
 interface Initiative {
     title: string;
@@ -83,17 +88,24 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
         center: { scale: 1, x: 0, opacity: 1, filter: "blur(0px)", zIndex: 40 },
         left: {
             scale: isMobile ? 0.7 : isTablet ? 0.7 : 0.72,
-            x: isMobile ? -180 : isTablet ? -250 : -330,
+            x: isMobile ? -250 : isTablet ? -280 : -380,
             opacity: isMobile ? 0.3 : isTablet ? 0.15 : 0.18,
             filter: isMobile ? "blur(2px)" : isTablet ? "blur(3px)" : "blur(4px)",
             zIndex: 5
         },
         right: {
             scale: isMobile ? 0.7 : isTablet ? 0.7 : 0.72,
-            x: isMobile ? 180 : isTablet ? 250 : 330,
+            x: isMobile ? 250 : isTablet ? 280 : 380,
             opacity: isMobile ? 0.3 : isTablet ? 0.15 : 0.18,
             filter: isMobile ? "blur(2px)" : isTablet ? "blur(3px)" : "blur(4px)",
             zIndex: 5
+        },
+        hidden: {
+            scale: 0,
+            x: 0,
+            opacity: 0,
+            filter: "blur(0px)",
+            zIndex: 0
         },
     };
 
@@ -143,7 +155,7 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
                         padding: "2px",
                         borderTopRightRadius: "32px",
                         borderBottomLeftRadius: "32px",
-                        background: isHovered && isActive
+                        background: (isHovered && isActive) || (isTouchDevice && isActive)
                             ? "linear-gradient(135deg, #DE4DBC, #595CED)"
                             : "transparent",
 
@@ -244,12 +256,22 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
 export default function Initiatives() {
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const getCardPosition = (index: number): Position =>
-        index === currentIndex
-            ? "center"
-            : (index === (currentIndex - 1 + initiatives.length) % initiatives.length
-                ? "left"
-                : "right");
+    const getCardPosition = (index: number): Position => {
+        const totalCards = initiatives.length;
+
+        // Calculate the relative position from current index (circular)
+        let relativePos = (index - currentIndex + totalCards) % totalCards;
+
+        // Normalize to handle circular wrapping
+        if (relativePos > totalCards / 2) {
+            relativePos = relativePos - totalCards;
+        }
+
+        if (relativePos === 0) return "center";
+        if (relativePos === -1 || relativePos === totalCards - 1) return "left";
+        if (relativePos === 1 || relativePos === -(totalCards - 1)) return "right";
+        return "hidden";
+    };
 
     const nextSlide = () => {
         setCurrentIndex((prev) => (prev + 1) % initiatives.length);
