@@ -36,6 +36,7 @@ export default function Navbar() {
     const navLinks = [
         { name: "Home", href: "/" },
         { name: "About Us", href: "/about" },
+        { name: "Team", href: "/team"},
     ];
 
     const isActive = (href: string) => pathname === href;
