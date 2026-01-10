@@ -1,4 +1,5 @@
 import TeamHero from "./component/TeamHero";
+import CurvedStage from "./component/CurvedStage";
 import TeamHead from "./component/TeamHead";
 import ExecutionTeam from "./component/ExecutionTeam";
 
@@ -11,6 +12,7 @@ export default function TeamPage() {
   return (
     <div className="bg-[#0f0b28]">
       <TeamHero />
+      <CurvedStage />
       <TeamHead />
       <ExecutionTeam />
     </div>

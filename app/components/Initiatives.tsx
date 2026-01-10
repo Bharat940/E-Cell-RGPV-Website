@@ -87,17 +87,17 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
     const positions = {
         center: { scale: 1, x: 0, opacity: 1, filter: "blur(0px)", zIndex: 40 },
         left: {
-            scale: isMobile ? 0.7 : isTablet ? 0.7 : 0.72,
-            x: isMobile ? -250 : isTablet ? -280 : -380,
-            opacity: isMobile ? 0.3 : isTablet ? 0.15 : 0.18,
-            filter: isMobile ? "blur(2px)" : isTablet ? "blur(3px)" : "blur(4px)",
+            scale: isMobile ? 0.75 : isTablet ? 0.7 : 0.72,
+            x: isMobile ? -240 : isTablet ? -280 : -380,
+            opacity: isMobile ? 0.4 : isTablet ? 0.15 : 0.18,
+            filter: isMobile ? "blur(3px)" : isTablet ? "blur(2px)" : "blur(4px)",
             zIndex: 5
         },
         right: {
-            scale: isMobile ? 0.7 : isTablet ? 0.7 : 0.72,
-            x: isMobile ? 250 : isTablet ? 280 : 380,
-            opacity: isMobile ? 0.3 : isTablet ? 0.15 : 0.18,
-            filter: isMobile ? "blur(2px)" : isTablet ? "blur(3px)" : "blur(4px)",
+            scale: isMobile ? 0.75 : isTablet ? 0.7 : 0.72,
+            x: isMobile ? 240 : isTablet ? 280 : 380,
+            opacity: isMobile ? 0.4 : isTablet ? 0.15 : 0.18,
+            filter: isMobile ? "blur(3px)" : isTablet ? "blur(2px)" : "blur(4px)",
             zIndex: 5
         },
         hidden: {
@@ -114,10 +114,10 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
             className="absolute w-full max-w-full sm:max-w-md md:max-w-lg cursor-pointer"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ ...positions[position], opacity: positions[position].opacity }}
-            // Faster transition on mobile for better INP
+            // Faster transition on mobile for better performance
             transition={{
-                duration: isMobile ? 0.35 : 0.5,
-                ease: isMobile ? "easeOut" : [0.22, 1, 0.36, 1]
+                duration: isMobile ? 0.25 : isTablet ? 0.35 : 0.5,
+                ease: isMobile ? "easeOut" : isTablet ? "easeInOut" : [0.22, 1, 0.36, 1]
             }}
             onMouseEnter={() => isActive && enableAnimations && setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -131,7 +131,7 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
                 }
             }}
             style={{
-                willChange: isMobile ? "transform, opacity" : "transform, opacity, filter"
+                willChange: isActive ? (isMobile ? "transform, opacity" : "transform, opacity, filter") : "auto"
             }}
         >
             <div
@@ -189,13 +189,13 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
                     animate={{
                         opacity: ((isHovered && isActive && enableAnimations) || isTouchDevice) ? 0 : 1,
                         scale: ((isHovered && isActive && enableAnimations) || isTouchDevice) ? 0.95 : 1,
-                        // Remove blur on mobile for better INP
+                        // Remove blur on mobile/tablet for better performance
                         filter: ((isHovered && isActive && enableAnimations) || isTouchDevice)
-                            ? (isMobile ? "blur(0px)" : "blur(2px)")
+                            ? "blur(0px)"
                             : "blur(0px)",
                     }}
-                    transition={{ duration: isMobile ? 0.3 : 0.4, ease: "easeInOut" }}
-                    style={{ willChange: enableAnimations ? "opacity, transform" : "auto" }}
+                    transition={{ duration: isMobile ? 0.2 : isTablet ? 0.25 : 0.4, ease: "easeInOut" }}
+                    style={{ willChange: (enableAnimations && isActive) ? "opacity, transform" : "auto" }}
                 >
                     <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white">
                         {title}
@@ -208,13 +208,11 @@ function InitiativeCard({ title, content, isActive, position, onClick }: Initiat
                     animate={{
                         opacity: ((isHovered && isActive && enableAnimations) || isTouchDevice) ? 1 : 0,
                         scale: ((isHovered && isActive && enableAnimations) || isTouchDevice) ? 1 : 0.97,
-                        // Remove blur on mobile for better INP
-                        filter: ((isHovered && isActive && enableAnimations) || isTouchDevice)
-                            ? "blur(0px)"
-                            : (isMobile ? "blur(0px)" : "blur(2px)"),
+                        // Remove blur on mobile/tablet for better performance
+                        filter: "blur(0px)",
                     }}
-                    transition={{ duration: isMobile ? 0.3 : 0.4, ease: "easeInOut" }}
-                    style={{ willChange: enableAnimations ? "opacity, transform" : "auto" }}
+                    transition={{ duration: isMobile ? 0.2 : isTablet ? 0.25 : 0.4, ease: "easeInOut" }}
+                    style={{ willChange: (enableAnimations && isActive) ? "opacity, transform" : "auto" }}
                 >
                     <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-6">
                         {title}

@@ -1,41 +1,62 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "motion/react";
 
 export default function TeamHero() {
   return (
-    <section className="relative w-full overflow-visible">
-      
-      {/* ===== HERO CONTENT AREA ===== */}
-      <div className="relative h-[70vh] flex items-center justify-center overflow-hidden bg-[#070b1a]">
+    <div className="relative w-full bg-[#040115]">
 
-        {/* Background image ONLY behind content */}
-        <Image
-          src="/assets/hero-bg.png"
-          alt="Team background"
-          fill
-          priority
-          className="object-cover opacity-40"
-        />
+      {/* Hero Section - Full viewport */}
+      <div className="relative h-screen flex items-center justify-center overflow-hidden">
 
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#070b1a]/90 via-[#070b1a]/70 to-[#070b1a]/95" />
+        {/* Background Image */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+          <Image
+            src="/assets/TeamHero-bg.png"
+            alt="Team background"
+            width={800}
+            height={800}
+            priority
+            className="object-contain opacity-40"
+          />
+        </div>
 
-        {/* Text */}
-        <h1 className="relative z-10 text-4xl md:text-5xl lg:text-6xl font-bold tracking-widest text-white">
+        {/* Blue Glow */}
+        <div className="
+          absolute w-[400px] h-[300px]
+          md:w-[800px] md:h-[600px]
+          bg-[#407EDD] rounded-full
+          blur-[200px] opacity-30
+          top-1/2 left-1/2
+          -translate-x-1/2 -translate-y-1/2
+          pointer-events-none z-[5]
+        "></div>
+
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 bg-black/40 pointer-events-none z-[6]"></div>
+
+        {/* Radial Gradient */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[8]">
+          <div
+            className="w-[900px] h-[600px] rounded-full blur-[100px] opacity-[0.15]"
+            style={{
+              background: 'radial-gradient(ellipse, rgba(255, 255, 255, 0.8) 0%, rgba(147, 197, 253, 0.5) 30%, rgba(59, 130, 246, 0.2) 60%, transparent 80%)'
+            }}
+          />
+        </div>
+
+        {/* Heading */}
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="relative z-[10] text-4xl md:text-5xl lg:text-7xl tracking-widest text-white drop-shadow-2xl font-(--font-clash-display)"
+        >
           TEAM E-CELL
-        </h1>
+        </motion.h1>
       </div>
 
-      {/* ===== CURVED STAGE (OVERLAP) ===== */}
-      <div className="relative -mt-[18vh] flex justify-center z-20 pointer-events-none">
-        <Image
-          src="/assets/curvedStage.png"
-          alt="Curved stage"
-          width={1600}
-          height={500}
-          className="w-full max-w-none"
-        />
-      </div>
-
-    </section>
+    </div>
   );
 }
